@@ -1,6 +1,8 @@
 import { songs } from "../../lib/songs";
 import { getAllStats } from "../../lib/voteStore";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const stats = await getAllStats();
