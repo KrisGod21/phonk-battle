@@ -33,7 +33,7 @@ export default function BattlePage() {
       console.error('Error reading localStorage queue:', e);
     }
 
-    // If queue is empty or invalid, generate a new shuffled cycle of 5 matchups
+    // If queue is empty or invalid, generate a new shuffled cycle of matchups
     if (!queue || queue.length === 0) {
       const ids = songs.map(s => s.id);
       
@@ -43,14 +43,14 @@ export default function BattlePage() {
         [ids[i], ids[j]] = [ids[j], ids[i]];
       }
 
-      // Group into 5 unique matches covering all 10 songs
-      queue = [
-        [ids[0], ids[1]],
-        [ids[2], ids[3]],
-        [ids[4], ids[5]],
-        [ids[6], ids[7]],
-        [ids[8], ids[9]],
-      ];
+      // Group dynamically into matchups of 2 unique songs
+      const grouped = [];
+      for (let i = 0; i < ids.length; i += 2) {
+        if (i + 1 < ids.length) {
+          grouped.push([ids[i], ids[i + 1]]);
+        }
+      }
+      queue = grouped;
     }
 
     // Pop the next matchup from the cycle
@@ -59,8 +59,9 @@ export default function BattlePage() {
     // Save remaining queue back to localStorage
     try {
       localStorage.setItem('phonk_battle_queue', JSON.stringify(queue));
-      // Round number is: 5 - remaining queue items
-      setRoundNumber(5 - queue.length);
+      // Round number is: total rounds - remaining queue items
+      const totalRounds = Math.floor(songs.length / 2);
+      setRoundNumber(totalRounds - queue.length);
     } catch (e) {
       console.error('Error saving localStorage queue:', e);
     }
@@ -188,7 +189,7 @@ export default function BattlePage() {
         <div className="battle-page__header">
           <h1 className="battle-page__title">THE ARENA</h1>
           <p className="battle-page__subtitle">Listen, feel the bass, and vote for the hardest track</p>
-          <div className="battle-page__round">Round {roundNumber} of 5</div>
+          <div className="battle-page__round">Round {roundNumber} of {Math.floor(songs.length / 2)}</div>
         </div>
 
         {/* Competitor Cards */}

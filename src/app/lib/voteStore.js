@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
+import { songs } from './songs';
 
-const SONG_COUNT = 10;
+const SONG_COUNT = songs.length;
 
 // Module-level store — survives across requests within the same process.
 // globalThis trick keeps state alive across Next.js hot-reloads in dev.

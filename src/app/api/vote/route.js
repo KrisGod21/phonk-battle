@@ -1,6 +1,7 @@
 import { recordVote, getBattlePercent } from "../../lib/voteStore";
+import { songs } from "../../lib/songs";
 
-const VALID_IDS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+const VALID_IDS = new Set(songs.map(s => s.id));
 
 export async function POST(request) {
   try {
