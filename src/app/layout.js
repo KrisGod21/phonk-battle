@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import ParticlesBg from "./components/ParticlesBg";
+import { AuthProvider } from "./context/AuthContext";
 
 /*
   📚 HOW NEXT.JS LAYOUTS WORK:
@@ -50,9 +51,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <ParticlesBg />
-        <Header />
-        {children}
+        <AuthProvider>
+          <ParticlesBg />
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

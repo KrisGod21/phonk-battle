@@ -16,9 +16,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="header" id="main-header">
@@ -57,6 +59,20 @@ export default function Header() {
               Leaderboard
             </Link>
           </li>
+          {user ? (
+            <li className="header__user-info">
+              <span className="header__user-email">{user.email}</span>
+              <button className="header__signout-btn" onClick={signOut}>
+                Sign Out
+              </button>
+            </li>
+          ) : (
+            <li>
+              <Link href="/login" className="header__login-btn">
+                Sign In
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

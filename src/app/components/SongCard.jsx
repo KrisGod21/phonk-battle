@@ -2,6 +2,8 @@
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import AudioVisualizer from './AudioVisualizer';
+import { useAuth } from '../context/AuthContext';
+import Link from 'next/link';
 
 /*
   📚 HOW REFS WORK:
@@ -21,7 +23,8 @@ function formatTime(seconds) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export default function SongCard({ song, onVote, disabled, isWinner, votePercent }) {
+export default function SongCard({ song, onVote, disabled, isWinner, votePercent, activePlayingId, onPlayToggle }) {
+  const { user } = useAuth();
   const audioRef = useRef(null);
   const progressRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -70,15 +73,28 @@ export default function SongCard({ song, onVote, disabled, isWinner, votePercent
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
+      if (onPlayToggle) onPlayToggle(null);
     } else {
       try {
         await audio.play();
         setIsPlaying(true);
+        if (onPlayToggle) onPlayToggle(song.id);
       } catch (err) {
         console.warn('Playback failed:', err);
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, song.id, onPlayToggle]);
+
+  // Handle external pause command when another card starts playing
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (activePlayingId !== song.id && isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      }
+    }
+  }, [activePlayingId, song.id, isPlaying]);
 
   const handleProgressClick = useCallback((e) => {
     const audio = audioRef.current;
@@ -178,6 +194,14 @@ export default function SongCard({ song, onVote, disabled, isWinner, votePercent
               {isWinner ? '🔥 WINNER' : 'DEFEATED'}
             </div>
           </div>
+        ) : !user ? (
+          <Link
+            href="/login"
+            className="song-card__vote-btn"
+            style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
+          >
+            <span>🔑 LOGIN TO VOTE</span>
+          </Link>
         ) : (
           <button
             className="song-card__vote-btn"

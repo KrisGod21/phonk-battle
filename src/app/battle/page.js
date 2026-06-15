@@ -19,6 +19,7 @@ export default function BattlePage() {
   const [isVoting, setIsVoting] = useState(false);
   const [shaking, setShaking] = useState(false);
   const [roundNumber, setRoundNumber] = useState(1);
+  const [activePlayingId, setActivePlayingId] = useState(null);
 
   // Get next pair from the 5-matchup cycle
   const getNextPairFromCycle = useCallback(() => {
@@ -125,12 +126,12 @@ export default function BattlePage() {
     [songsPair, hasVoted, isVoting, triggerShake]
   );
 
-  // Load a new battle
   const handleNextBattle = useCallback(() => {
     setHasVoted(false);
     setVotedWinnerId(null);
     setResults(null);
     setIsVoting(false);
+    setActivePlayingId(null);
     setSongsPair(getNextPairFromCycle());
   }, [getNextPairFromCycle]);
 
@@ -197,6 +198,8 @@ export default function BattlePage() {
             song={songA}
             onVote={handleVote}
             disabled={hasVoted || isVoting}
+            activePlayingId={activePlayingId}
+            onPlayToggle={setActivePlayingId}
             {...getCardProps(songA)}
           />
 
@@ -210,6 +213,8 @@ export default function BattlePage() {
             song={songB}
             onVote={handleVote}
             disabled={hasVoted || isVoting}
+            activePlayingId={activePlayingId}
+            onPlayToggle={setActivePlayingId}
             {...getCardProps(songB)}
           />
         </div>
